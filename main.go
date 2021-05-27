@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -31,6 +32,7 @@ func main() {
 		var list []string
 		err := device.RequestAPI("GET", "/guide/channels", &list)
 		if err != nil {
+			log.Printf("[ERR] Failed to fetch channel list: %v", err)
 			c.String(503, err.Error())
 			return
 		}
@@ -41,6 +43,7 @@ func main() {
 			var chinfo map[string]interface{}
 			err = device.RequestAPI("GET", ch, &chinfo)
 			if err != nil {
+				log.Printf("[ERR] Failed to fetch info for %v: %v", ch, err)
 				c.String(503, err.Error())
 				return
 			}
