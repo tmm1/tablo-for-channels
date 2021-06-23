@@ -3,7 +3,7 @@ RUN apk add go git
 WORKDIR /usr/src/tablo-for-channels
 ADD go.* *.go .
 ADD tablo tablo
-RUN go build
+RUN GOARM=7 go build
 
 FROM alpine
 WORKDIR /usr/src/app
