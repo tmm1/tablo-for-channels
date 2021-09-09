@@ -40,22 +40,20 @@ func main() {
 		c.Header("Content-Type", "application/x-mpegurl")
 		fmt.Fprintf(c.Writer, "#EXTM3U\n\n")
 		for _, ch := range list {
-			var chinfo map[string]interface{}
+			// ch == "/guide/channels/XXXX"
+			var chinfo *tablo.Channel
 			err = device.RequestAPI("GET", ch, &chinfo)
 			if err != nil {
 				log.Printf("[ERR] Failed to fetch info for %v: %v", ch, err)
 				c.String(503, err.Error())
 				return
 			}
-			info := chinfo["channel"].(map[string]interface{})
-			callsign := info["call_sign"].(string)
-			number := fmt.Sprintf("%v.%v", info["major"], info["minor"])
 			fmt.Fprintf(c.Writer, "#EXTINF:-1 channel-id=\"%v\" tvg-chno=\"%v\",%s\nhttp://%s/watch/%v\n\n",
-				callsign,
-				number,
-				callsign,
+				chinfo.Info.CallSign,
+				chinfo.Number(),
+				chinfo.Info.CallSign,
 				c.Request.Host,
-				chinfo["object_id"],
+				chinfo.ID,
 			)
 		}
 	})
